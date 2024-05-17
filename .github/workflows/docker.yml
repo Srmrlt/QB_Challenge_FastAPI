@@ -1,0 +1,41 @@
+name: Docker build & push
+on:
+  push:
+    branches:
+      - FastAPI-main
+  workflow_call:
+    secrets:
+      DOCKERHUB_USERNAME:
+        required: true
+      DOCKERHUB_TOKEN:
+        required: true
+
+jobs:
+  docker_image:
+    name: Build & Push Image
+    runs-on: ubuntu-22.04
+
+    steps:
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Create Docker Image Name
+        run: echo "IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/qb_challenge" >> $GITHUB_ENV
+
+      - name: Create Shorten Commit Hash
+        run: echo "COMMIT_SHA=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
+
+      - name: Build and push image
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:fastapi
+            ${{ env.IMAGE_NAME }}:${{ env.COMMIT_SHA }}

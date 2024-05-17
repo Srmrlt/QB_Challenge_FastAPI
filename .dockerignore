@@ -1,0 +1,20 @@
+Dockerfile
+.dockerignore
+
+# Git
+.git
+.gitignore
+.github
+
+# Deploy
+infra
+
+# All exclusions from .gitignore have been added to .dockerignore
+
+venv
+.idea
+data
+__pycache__
+db.sqlite3
+.env
+static
